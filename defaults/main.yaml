@@ -1,0 +1,7 @@
+---
+# Version of Raspberry Pi Foundation's Linux kernel source builds to
+# use. Linux kernel 5.4 is a Long Term Support (LTS) version, so we
+# default to the latest commit on that branch. You can also name a tag
+# or a commit hash here to pin the kernel builds to that Git ref.
+# See the repo at https://github.com/raspberrypi/linux for more info.
+raspberry_pi_linux_kernel_version: rpi-5.4.y

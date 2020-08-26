@@ -1,0 +1,17 @@
+---
+- name: Simulate RPi.
+  hosts: all
+  tasks:
+    # On a regular Debian system, this file will do nothing. But on a
+    # Raspberry Pi board, the firmware checks this file for its kernel
+    # command line arguments. For the sake of more complete testing,
+    # we create this file in all cases since it's normally innocuous.
+    - name: Create cmdline.txt file.
+      become: true
+      copy:
+        dest: /boot/cmdline.txt
+        # This is just some example content.
+        content: >
+          dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2
+          rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait
+        mode: '755'

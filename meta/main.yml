@@ -1,0 +1,13 @@
+galaxy_info:
+  author: Anarcho-Tech NYC
+  description: Ensure the AppArmor LSM is enabled, recompiling Raspberry Pi kernels if necessary.
+  company: Eat The Rich, Inc.
+  license: AGPL-3.0-or-later # SPDX tag from https://spdx.org/licenses/
+  min_ansible_version: 2.9
+  platforms:
+    - name: Raspbian
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - 9

@@ -1,0 +1,30 @@
+---
+- name: Configure bootloader.
+  become: true
+  import_tasks: bootloader.yaml
+
+- name: Install AppArmor utilities and profiles.
+  become: true
+  apt:
+    name:
+      - apparmor-utils
+      - apparmor-profiles
+      - apparmor-profiles-extra
+    state: present
+
+- name: Check for AppArmor support in kernel.
+  become: true
+  command: "aa-status"
+  register: aa_status
+  changed_when: false
+  failed_when: false
+
+# Would be nice to use something like `meta: end_role` here, but that
+# doesn't seem to exist. Instead, we just skip this whole section if
+# we don't need to rebuild the kernel.
+- name: Build AppArmor-enabled RPi kernel.
+  become: true
+  when:
+    - raspbian | default(false)
+    - "'apparmor module is loaded.' not in aa_status.stdout_lines[0]"
+  import_tasks: recompile-kernel-rpi.yaml

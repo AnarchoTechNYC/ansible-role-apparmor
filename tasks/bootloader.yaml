@@ -1,0 +1,41 @@
+---
+- name: Check for GRUB.
+  register: grub
+  stat:
+    path: /boot/grub/grub.cfg
+    get_checksum: false
+
+- name: Check for RPi firmware bootloader.
+  register: cmdline_txt
+  stat:
+    path: /boot/cmdline.txt
+    get_checksum: false
+
+- name: Configure GRUB for AppArmor boot.
+  when: grub.stat.exists
+  block:
+    - name: Add AppArmor command line parameters to default GRUB entry.
+      register: grub_cmdline
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^\s*GRUB_CMDLINE_LINUX_DEFAULT="((?!apparmor=1)(?!security=apparmor)[\w=/\-\.\,\_ ]+)*"\s*$'
+        backrefs: true
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="apparmor=1 security=apparmor \1"'
+        mode: '640'
+
+    - name: Update GRUB bootloader.
+      when: grub_cmdline is changed
+      command: update-grub
+      notify: Reboot.
+
+- name: Configure RPi bootloader for AppArmor boot.
+  when: cmdline_txt.stat.exists
+  block:
+    - name: Add AppArmor command line parameters to RPi bootloader.
+      lineinfile:
+        path: /boot/cmdline.txt
+        regexp: '^\s*((?!apparmor=1)(?!security=apparmor)[\w=/\-\.\,\_ ]+)\s*$'
+        backrefs: true
+        line: 'apparmor=1 security=apparmor \1'
+        mode: '755'
+      notify: Reboot.

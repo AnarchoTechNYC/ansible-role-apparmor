@@ -1,0 +1,13 @@
+---
+- name: Verify
+  hosts: all
+  tasks:
+  - name: Register AppArmor enablement.
+    command: aa-enabled
+    become: true
+    register: aa_enabled
+    changed_when: false
+
+  - name: Check for AppArmor activation.
+    assert:
+      that: "'Yes' == aa_enabled.stdout_lines[0]"
