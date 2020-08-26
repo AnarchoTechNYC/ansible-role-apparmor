@@ -30,12 +30,10 @@
 
 - name: Configure RPi bootloader for AppArmor boot.
   when: cmdline_txt.stat.exists
-  block:
-    - name: Add AppArmor command line parameters to RPi bootloader.
-      lineinfile:
-        path: /boot/cmdline.txt
-        regexp: '^\s*((?!apparmor=1)(?!security=apparmor)[\w=/\-\.\,\_ ]+)\s*$'
-        backrefs: true
-        line: 'apparmor=1 security=apparmor \1'
-        mode: '755'
-      notify: Reboot.
+  lineinfile:
+    path: /boot/cmdline.txt
+    regexp: '^\s*((?!apparmor=1)(?!security=apparmor)[\w=/\-\.\,\_ ]+)\s*$'
+    backrefs: true
+    line: 'apparmor=1 security=apparmor \1'
+    mode: '755'
+  notify: Reboot.
